@@ -1,0 +1,513 @@
+@import "tailwindcss";
+
+/* Wide screens with motion allowed get the pinned, sideways album rail.
+ * Everyone else gets a vertical stack. Must match MQ.rail in lib/motion.ts. */
+@custom-variant rail (@media (min-width: 1024px) and (prefers-reduced-motion: no-preference));
+@custom-variant fine (@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference));
+
+/* ------------------------------------------------------------------------
+ * Theme variables
+ * Registered with @property so the browser can animate them: when an era
+ * swaps these values, every colour on the page cross-fades.
+ * Values below are the default "showtime" theme (content/site.ts).
+ * --------------------------------------------------------------------- */
+@property --c-bg { syntax: "<color>"; inherits: true; initial-value: #fff3e4; }
+@property --c-surface { syntax: "<color>"; inherits: true; initial-value: #fbe1cc; }
+@property --c-ink { syntax: "<color>"; inherits: true; initial-value: #2a1712; }
+@property --c-muted { syntax: "<color>"; inherits: true; initial-value: #6b4a3e; }
+@property --c-accent { syntax: "<color>"; inherits: true; initial-value: #c8102e; }
+@property --c-on-accent { syntax: "<color>"; inherits: true; initial-value: #fff3e4; }
+@property --c-deco-1 { syntax: "<color>"; inherits: true; initial-value: #f6c9d4; }
+@property --c-deco-2 { syntax: "<color>"; inherits: true; initial-value: #e8b04b; }
+@property --c-deco-3 { syntax: "<color>"; inherits: true; initial-value: #2953a0; }
+
+:root {
+  --c-bg: #fff3e4;
+  --c-surface: #fbe1cc;
+  --c-ink: #2a1712;
+  --c-muted: #6b4a3e;
+  --c-accent: #c8102e;
+  --c-on-accent: #fff3e4;
+  --c-deco-1: #f6c9d4;
+  --c-deco-2: #e8b04b;
+  --c-deco-3: #2953a0;
+
+  /* Era typography (overridden per era) */
+  --font-era: var(--font-fraunces), Georgia, serif;
+  --font-era-accent: var(--font-courier), monospace;
+  --era-case: none;
+  --era-weight: 800;
+  --era-tracking: -0.02em;
+
+  --header-h: 4.25rem;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --theme-duration: 0.8s;
+
+  color-scheme: light;
+}
+
+/* Each page's theme wrapper. Its variables animate when the album rail
+ * (or anything else) changes them. */
+.theme-scope {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  min-height: 100dvh;
+  transition:
+    --c-bg var(--theme-duration) var(--ease-show),
+    --c-surface var(--theme-duration) var(--ease-show),
+    --c-ink var(--theme-duration) var(--ease-show),
+    --c-muted var(--theme-duration) var(--ease-show),
+    --c-accent var(--theme-duration) var(--ease-show),
+    --c-on-accent var(--theme-duration) var(--ease-show),
+    --c-deco-1 var(--theme-duration) var(--ease-show),
+    --c-deco-2 var(--theme-duration) var(--ease-show),
+    --c-deco-3 var(--theme-duration) var(--ease-show);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --theme-duration: 0s;
+  }
+}
+
+/* Tailwind tokens that follow the live theme */
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-accent: var(--c-accent);
+  --color-on-accent: var(--c-on-accent);
+  --color-deco-1: var(--c-deco-1);
+  --color-deco-2: var(--c-deco-2);
+  --color-deco-3: var(--c-deco-3);
+
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-mono: var(--font-courier), "Courier New", monospace;
+  --font-script: var(--font-pinyon), cursive;
+}
+
+/* Fixed brand tokens, defined once */
+@theme {
+  --color-cream: #fff3e4;
+  --color-espresso: #2a1712;
+  --color-lipstick: #c8102e;
+  --color-cobalt: #2953a0;
+  --color-blonde: #f5d9a8;
+  --color-bow: #f6c9d4;
+  --color-sequin: #e8b04b;
+
+  --text-mega: clamp(3.5rem, 16.5vw, 18rem);
+  --text-mega--line-height: 0.82;
+  --text-display: clamp(2.75rem, 8vw, 8.5rem);
+  --text-display--line-height: 0.9;
+  --text-title: clamp(2.1rem, 5vw, 4.75rem);
+  --text-title--line-height: 0.95;
+  --text-lede: clamp(1.25rem, 2.2vw, 1.75rem);
+  --text-lede--line-height: 1.35;
+
+  --ease-show: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 30s) linear infinite;
+  --animate-spin-vinyl: spin 2.4s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(var(--r, 0deg));
+    }
+    50% {
+      transform: translateY(-10px) rotate(calc(var(--r, 0deg) + 4deg));
+    }
+  }
+}
+
+/* ------------------------------------------------------------------------
+ * Base
+ * --------------------------------------------------------------------- */
+@layer base {
+  html {
+    background: var(--c-bg);
+    color: var(--c-ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--c-bg);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+
+  section[id] {
+    scroll-margin-top: var(--header-h);
+  }
+
+  ::selection {
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  a {
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+  }
+
+  img {
+    user-select: none;
+  }
+}
+
+/* ------------------------------------------------------------------------
+ * Utilities
+ * --------------------------------------------------------------------- */
+
+/* Fraunces at its campiest: soft, wonky, big optical size */
+@utility soft {
+  font-variation-settings:
+    "SOFT" 100,
+    "opsz" 144;
+}
+
+/* The active era's title treatment */
+@utility era-title {
+  font-family: var(--font-era);
+  text-transform: var(--era-case);
+  font-weight: var(--era-weight);
+  letter-spacing: var(--era-tracking);
+}
+
+@utility font-era-accent {
+  font-family: var(--font-era-accent);
+}
+
+@utility container-show {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Visually hidden but available to screen readers */
+@utility sr-only-focusable {
+  &:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Hide the native cursor while the custom one is active (fine pointers only) */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+/* Elements animated in by GSAP start hidden, but only when motion is allowed
+ * and JS has run (the `js` class is set by an inline script in <head>).
+ * Setting the starting state here, not just in JS, means nothing is painted
+ * in its final place and then snapped back when the page boots. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-reveal],
+  html.js [data-hero-in],
+  html.js [data-sticker],
+  html.js [data-drop] {
+    opacity: 0;
+  }
+  /* Photos that wipe into view (components/chrome/Choreo) */
+  html.js [data-img-reveal] {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  /* Failsafe: on a very slow device (or if a script fails) don't leave
+   * content hidden. Anything whose animation hasn't been set up after 5s
+   * shows by itself. Components mark elements `data-armed` as soon as they
+   * take them over, which cancels this. */
+  html.js :is([data-reveal], [data-hero-in], [data-sticker], [data-drop]):not([data-armed]) {
+    animation: reveal-failsafe 0.6s ease-out 5s both;
+  }
+  html.js [data-img-reveal]:not([data-armed]) {
+    animation: img-reveal-failsafe 0.8s ease-out 5s both;
+  }
+
+  /* The hero's TV starts in its "switching on" pose (same values as the
+   * gsap.set in Hero). A transform, not a fade: the photo inside is the
+   * page's largest paint. */
+  html.js [data-tv] {
+    transform: translateY(8%) rotate(-11deg) scale(0.88);
+  }
+}
+
+/* Font gate (components/ui/FontGate): until a gated block nears the viewport,
+ * its text borrows the surrounding font, so far-off era fonts aren't fetched
+ * during the first layout. Beats inline font-family on purpose. */
+html.js [data-font-gate]:not([data-near]) * {
+  font-family: inherit !important;
+}
+
+/* SplitText line masks: room for descenders and italic overhang */
+.split-line-mask {
+  padding: 0.06em 0.14em 0.18em;
+  margin: -0.06em -0.14em -0.18em;
+}
+
+/* ------------------------------------------------------------------------
+ * Preloader (components/chrome/Preloader)
+ * Only with JS, once per session, never for reduced motion.
+ *
+ * The motion is pure CSS, so it stays smooth while the page boots. It starts
+ * on the first frame the visitor actually sees: the inline script in
+ * app/layout.tsx adds `preloader-go` to <html> two animation frames in.
+ * Then the name rises letter by letter and a bar fills; when the component
+ * sets data-state="out", the letters leave and the curtain lifts.
+ * --------------------------------------------------------------------- */
+html:not(.js) .preloader,
+html.skip-preloader .preloader {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader {
+    display: none;
+  }
+}
+
+@property --preloader-pct {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.preloader {
+  /* Failsafe: if the page's JS never arrives, get out of the way anyway. */
+  animation: preloader-failsafe 0.01s 10s both;
+}
+
+/* Waiting for the first frame */
+.preloader-letter {
+  display: inline-block;
+  transform: translateY(110%) rotate(8deg);
+}
+.preloader-fade {
+  opacity: 0;
+}
+.preloader-bar {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.preloader-count {
+  counter-reset: pct var(--preloader-pct);
+}
+.preloader-count::after {
+  content: counter(pct) "%";
+}
+
+/* Intro, about 2.1s */
+html.preloader-go .preloader-fade {
+  animation: preloader-fade-in 0.8s ease-out 0.05s both;
+}
+html.preloader-go .preloader-letter {
+  animation: preloader-letter-in 1.1s var(--ease-show) both;
+  animation-delay: calc(0.15s + var(--i) * 0.11s);
+}
+html.preloader-go .preloader-bar {
+  animation: preloader-fill 1.9s cubic-bezier(0.45, 0, 0.25, 1) 0.2s both;
+}
+html.preloader-go .preloader-count {
+  animation: preloader-count 1.9s cubic-bezier(0.45, 0, 0.25, 1) 0.2s both;
+}
+
+/* Exit, about 1.9s: letters leave upwards one by one, then the curtain
+ * rises at an even pace so the hero is revealed rather than flashed. */
+.preloader[data-state="out"] {
+  animation: preloader-lift 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.45s both;
+}
+.preloader[data-state="out"] .preloader-letter {
+  animation: preloader-letter-out 0.7s cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation-delay: calc(var(--i) * 0.04s);
+}
+.preloader[data-state="out"] .preloader-fade {
+  animation: preloader-fade-out 0.4s ease-in both;
+}
+
+@keyframes preloader-letter-in {
+  to { transform: none; }
+}
+@keyframes preloader-letter-out {
+  from { transform: none; }
+  to { transform: translateY(-110%) rotate(-4deg); }
+}
+@keyframes preloader-fade-in {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes preloader-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes preloader-fill {
+  to { transform: scaleX(1); }
+}
+@keyframes preloader-count {
+  to { --preloader-pct: 100; }
+}
+@keyframes preloader-lift {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 0 100% 0); }
+}
+@keyframes preloader-failsafe {
+  to { visibility: hidden; }
+}
+@keyframes reveal-failsafe {
+  to { opacity: 1; }
+}
+@keyframes img-reveal-failsafe {
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* TV static, flashed over the career timeline's screen when the channel
+ * changes (components/sections/Timeline). Same noise as the film grain. */
+.tv-static {
+  background-color: #2a2a2a;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Stage spotlight drifting over the dark awards section on touch screens
+ * (mouse users steer it; components/ui/Spotlight). */
+@keyframes spotlight-drift {
+  0% { transform: translate(15vw, 10rem); }
+  50% { transform: translate(70vw, 28rem); }
+  100% { transform: translate(40vw, 6rem); }
+}
+
+/* "Pause animations" toggle (components/chrome/MotionToggle) */
+html[data-motion="paused"] .spotlight,
+html[data-motion="paused"] .grain,
+html[data-motion="paused"] .animate-marquee,
+html[data-motion="paused"] .animate-float,
+html[data-motion="paused"] .animate-spin-vinyl {
+  animation-play-state: paused !important;
+}
+
+/* Film grain */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.4 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.9s steps(6) infinite;
+}
+
+/* Touch devices: keep the texture, skip the flicker. */
+@media (pointer: coarse) {
+  .grain {
+    animation: none;
+    inset: 0;
+  }
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Vinyl grooves */
+.vinyl {
+  background:
+    radial-gradient(circle at 50% 50%, var(--label, var(--c-accent)) 0 17%, #111 17.5% 19%, transparent 19.5%),
+    repeating-radial-gradient(circle at 50% 50%, #151515 0 1.5px, #232323 2px 3px),
+    #111;
+  box-shadow: inset 0 0 0 2px #000, 0 10px 30px rgb(0 0 0 / 0.35);
+}
+
+.vinyl::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 30deg, transparent 0 20%, rgb(255 255 255 / 0.12) 25%, transparent 32% 70%, rgb(255 255 255 / 0.08) 75%, transparent 82%);
+}
+
+/* ------------------------------------------------------------------------
+ * Page transitions (React <ViewTransition>, see components/chrome/PageTransition)
+ * The new page rises like a stage curtain; the old one dips back.
+ * --------------------------------------------------------------------- */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(.curtain) {
+  animation: curtain-out 0.55s var(--ease-show) both;
+}
+::view-transition-new(.curtain) {
+  animation: curtain-in 0.85s var(--ease-show) both;
+}
+
+@keyframes curtain-out {
+  to {
+    opacity: 0.4;
+    transform: scale(0.96) translateY(-2%);
+    filter: blur(2px);
+  }
+}
+@keyframes curtain-in {
+  from {
+    clip-path: inset(100% 0 0 0 round 2rem 2rem 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0);
+  }
+}
+
+::view-transition-group(.cover) {
+  animation-duration: 0.7s;
+  animation-timing-function: var(--ease-show);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain,
+  .animate-marquee,
+  .animate-float,
+  .animate-spin-vinyl {
+    animation: none !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
