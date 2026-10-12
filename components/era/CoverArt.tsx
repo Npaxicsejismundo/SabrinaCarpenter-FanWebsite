@@ -3,8 +3,9 @@ import type { Era } from "@/content/types";
 import { fontFamily } from "@/lib/font-family";
 
 /**
- * Official album art from Spotify's image CDN, or a clearly labelled
- * typographic placeholder when no official artwork is available.
+ * Official album art (from Spotify's image CDN, or a copy in /public/covers
+ * for releases that aren't on Spotify), or a clearly labelled typographic
+ * placeholder when no official artwork is available.
  */
 export function CoverArt({
   era,
@@ -17,13 +18,14 @@ export function CoverArt({
   eager?: boolean;
   className?: string;
 }) {
-  if (era.cover.kind === "spotify") {
+  if (era.cover.kind !== "placeholder") {
+    const px = era.cover.kind === "file" ? era.cover.size : 640;
     return (
       <Image
         src={era.cover.src}
         alt={era.cover.alt}
-        width={640}
-        height={640}
+        width={px}
+        height={px}
         sizes={sizes}
         loading={eager ? "eager" : "lazy"}
         fetchPriority={eager ? "high" : "auto"}

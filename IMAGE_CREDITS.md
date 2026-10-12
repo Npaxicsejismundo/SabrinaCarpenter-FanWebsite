@@ -37,11 +37,12 @@ hero are separate layers drawn on top.
 
 Cover art belongs to the releasing labels. It's shown for identification and commentary on an
 unofficial, non-commercial fan site, loaded from Spotify's official image CDN (`i.scdn.co`), the
-same 640×640 images the Spotify players display. The track list artwork uses the same covers.
+same 640×640 images the Spotify players display, except for the one release that isn't on
+Spotify (below). The track list artwork uses the same covers.
 
 | Release | Year | Label | Artwork |
 | --- | --- | --- | --- |
-| Can't Blame a Girl for Trying (EP) | 2014 | Hollywood Records | Placeholder (not on Spotify) |
+| Can't Blame a Girl for Trying (EP) | 2014 | Hollywood Records | Copy in `public/covers` (not on Spotify) |
 | Eyes Wide Open | 2015 | Hollywood Records | Spotify CDN |
 | EVOLution | 2016 | Hollywood Records | Spotify CDN |
 | Singular: Act I | 2018 | Hollywood Records | Spotify CDN |
@@ -51,8 +52,10 @@ same 640×640 images the Spotify players display. The track list artwork uses th
 | Short n' Sweet | 2024 | Island Records | Spotify CDN |
 | Man's Best Friend | 2025 | Island Records | Spotify CDN |
 
-Can't Blame a Girl for Trying isn't on Spotify, so a labelled, original placeholder stands in. To
-use official artwork instead, set its `cover` in `content/eras.ts`.
+Can't Blame a Girl for Trying isn't on Spotify, so a copy of its official cover is stored in the
+project (`public/covers/cant-blame-a-girl-for-trying.jpg`, 491×491) and served from the site
+itself. The same rules apply: © Hollywood Records, shown for identification on a non-commercial fan
+site.
 
 ## Video thumbnails
 

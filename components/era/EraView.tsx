@@ -201,7 +201,11 @@ export function EraView({ era }: { era: Era }) {
           </div>
           <p className="mt-8 text-xs text-muted">
             Cover art © {era.label}
-            {era.cover.kind === "spotify" ? ", shown via Spotify's official image CDN." : ". Official artwork not available; placeholder shown."}
+            {era.cover.kind === "spotify"
+              ? ", shown via Spotify's official image CDN."
+              : era.cover.kind === "file"
+                ? "."
+                : ". Official artwork not available; placeholder shown."}
           </p>
         </div>
       </section>

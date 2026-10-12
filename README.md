@@ -189,7 +189,8 @@ values the site uses would cut it to a fraction without changing how it looks.
 
 - Photos: freely licensed from Wikimedia Commons; every photographer and licence is listed in
   [IMAGE_CREDITS.md](IMAGE_CREDITS.md) and on `/credits`
-- Album artwork: © the releasing labels, shown via Spotify's official image CDN
+- Album artwork: © the releasing labels, shown via Spotify's official image CDN (the 2014 EP,
+  which isn't on Spotify, from a copy in `public/covers`)
 - Fonts: Fraunces, Instrument Sans, Courier Prime, Jost, Barlow, Amatic SC, Yesteryear, Pinyon
   Script and IM Fell English (SIL Open Font License), and Homemade Apple (Apache License 2.0),
   all from Google Fonts

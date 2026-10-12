@@ -60,7 +60,7 @@ export default function Credits() {
         <p className="mt-2 max-w-2xl text-muted">
           Cover art belongs to the releasing labels and is shown from Spotify&apos;s official image CDN,
           the same images its players display. The Can&apos;t Blame a Girl for Trying EP isn&apos;t on
-          Spotify, so a labelled placeholder stands in.
+          Spotify, so a copy of its official cover is served from this site instead.
         </p>
         <ul className="mt-6 grid gap-2 text-sm sm:grid-cols-2">
           {eras.map((e) => (

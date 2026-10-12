@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { eraBySlug, eras } from "@/content/eras";
-import { googleFont, imageDataUrl, loadGoogleFont, OG_SIZE } from "@/lib/og";
+import { googleFont, imageDataUrl, loadGoogleFont, OG_SIZE, publicImageDataUrl } from "@/lib/og";
 
 export const alt = "Album era share card";
 export const size = OG_SIZE;
@@ -17,7 +17,11 @@ export default async function EraOpenGraphImage({ params }: { params: Promise<{ 
   const [display, mono, cover] = await Promise.all([
     loadGoogleFont(ty.display),
     loadGoogleFont("courier"),
-    era.cover.kind === "spotify" ? imageDataUrl(era.cover.src) : Promise.resolve(null),
+    era.cover.kind === "spotify"
+      ? imageDataUrl(era.cover.src)
+      : era.cover.kind === "file"
+        ? publicImageDataUrl(era.cover.src)
+        : Promise.resolve(null),
   ]);
   const title = era.stylized ?? era.title;
   const displayName = googleFont[ty.display].family;

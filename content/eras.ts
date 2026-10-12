@@ -9,7 +9,9 @@ import type { Era, EraSlug } from "./types";
  * or, when a cover has no lettering, the era's lead single artwork.
  *
  * Artwork: official cover art served from Spotify's image CDN (same images the
- * Spotify players show). Facts checked October 2026 (sources in README).
+ * Spotify players show), or, for a release that isn't on Spotify, a copy of
+ * its official cover in /public/covers. Facts checked October 2026 (sources
+ * in README).
  */
 
 const spotifyArt = (hash: string) =>
@@ -26,11 +28,12 @@ export const eras: Era[] = [
     releaseDate: "2014-04-08",
     label: "Hollywood Records",
     mood: "Golden hour",
+    // Not on Spotify, so the official cover is stored in the project.
     cover: {
-      kind: "placeholder",
-      reason:
-        "This EP isn't on Spotify, so there's no official artwork to show. Swap in an official image in content/eras.ts.",
-      alt: "Placeholder for the Can't Blame a Girl for Trying EP artwork",
+      kind: "file",
+      src: "/covers/cant-blame-a-girl-for-trying.jpg",
+      size: 491,
+      alt: "Can't Blame a Girl for Trying cover: Sabrina lounges on a sofa in a sheer white blouse, sunlight flaring through her hair, her name in hairline lowercase letters across the bottom.",
     },
     // The EP isn't on Spotify; its title track lives on Eyes Wide Open.
     spotify: { type: "track", id: "5K7fGxZQB0K5sPKhLe9e07" },

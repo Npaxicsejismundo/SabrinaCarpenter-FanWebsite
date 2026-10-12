@@ -81,6 +81,15 @@ export type CoverArt =
       alt: string;
     }
   | {
+      kind: "file";
+      /** Square official artwork saved in /public, e.g. "/covers/x.jpg"
+       * (for releases that aren't on Spotify). */
+      src: string;
+      /** Width and height in pixels. */
+      size: number;
+      alt: string;
+    }
+  | {
       kind: "placeholder";
       /** Why there's no official artwork. Shown on the placeholder. */
       reason: string;

@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { cacheLife } from "next/cache";
 import type { FontKey } from "@/content/types";
 
@@ -35,6 +37,13 @@ export async function loadGoogleFont(key: FontKey): Promise<ArrayBuffer> {
   const url = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/)?.[1];
   if (!url) throw new Error(`Could not load ${family} for OG image`);
   return fetch(url).then((r) => r.arrayBuffer());
+}
+
+/** Read an image from /public (e.g. "/covers/x.jpg") and inline it as a data URL. */
+export async function publicImageDataUrl(src: string): Promise<string> {
+  const file = await readFile(path.join(process.cwd(), "public", src));
+  const type = src.endsWith(".png") ? "image/png" : "image/jpeg";
+  return `data:${type};base64,${file.toString("base64")}`;
 }
 
 /** Fetch a remote image and inline it as a data URL. */
